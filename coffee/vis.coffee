@@ -5,6 +5,9 @@ home =[47.67645, -122.39607]
 map = null
 circle = null
 
+table_url = "https://docs.google.com/spreadsheets/d/1Y_rBIlUwBYWDAz0Hp_SooQnESTbfhIZE-r5fGMRTbEA/pubhtml"
+table = null
+
 click = (e) ->
   circle.setLatLng(e.latlng)
   console.log(e.latlng)
@@ -40,7 +43,7 @@ initMap = () ->
 
   L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-    maxZoom: 22
+    maxZoom: 20
   }).addTo(map)
 
 
@@ -54,11 +57,19 @@ initCircle = () ->
   circle.setLatLng(home)
   circle.addTo(map)
 
+showInfo = (data, tabletop) ->
+  console.log(data)
+
+initTable = () ->
+  Tabletop.init( {key: table_url,callback: showInfo,simpleSheet: true} )
+
+
 
 $ ->
 
   initMap()
   initCircle()
+  initTable()
 
   map.on('click', click)
   d3.select("#create").on('click', make)
