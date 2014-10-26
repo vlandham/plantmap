@@ -18,6 +18,8 @@
   <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
   <link rel="stylesheet" href="css/style.css">
 
+  <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+
   <script src="js/libs/modernizr-2.0.6.min.js"></script>
 </head>
 
@@ -52,7 +54,7 @@
           <div class="form-group">
             <label for="formType" class="col-sm-2 control-label">Type</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="formType" id="formType">
+              <input type="text" class="form-control" data-provide="typeahead" autocomplete="off" name="formType" id="formType">
             </div>
           </div>
           <div class="form-group">
@@ -67,24 +69,28 @@
               <label class="radio-inline">
                 <input type="radio" name="formSize" id="sizeLarge" value="large"> large
               </label>
-
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox"> Remember me
-                </label>
-              </div>
+            <label for="formAccess" class="col-sm-2 control-label">Access</label>
+            <div class="col-sm-10">
+              <label class="radio-inline">
+                <input type="radio" name="formAccess" id="accessSmall" value="easy" checked="checked" > easy
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="formAccess" id="accessMedium" value="medium"> medium
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="formAccess" id="accessLarge" value="restricted"> restricted
+              </label>
             </div>
           </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="submit" id="saveLocation" class="btn btn-primary">Save</button>
-      </div>
-</form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" id="saveLocation" class="btn btn-primary">Save</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -98,6 +104,7 @@
   <script defer src="js/script.js"></script>
   <script src="js/libs/coffee-script.js"></script>
   <script src="js/libs/bootstrap.min.js"></script>
+  <script src="js/libs/bootstrap3-typeahead.min.js"></script>
   <script src="js/leaflet/leaflet.js"></script>
   <script src="js/libs/d3.js"></script>
   <script src="js/libs/tabletop.js"></script>
