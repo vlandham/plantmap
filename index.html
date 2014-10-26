@@ -1,79 +1,132 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Plantmap : mapping the plants">
+  <title>Plant Map</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Plantmap</title>
-  </head>
+  <link rel="stylesheet" href="js/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+  <link rel="stylesheet" href="css/style.css">
 
-  <body>
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/vlandham/plantmap">View on GitHub</a>
+<body>
 
-          <h1 id="project_title">Plantmap</h1>
-          <h2 id="project_tagline">mapping the plants</h2>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">New Record</h4>
+      </div>
+      <div class="modal-body">
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/vlandham/plantmap/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/vlandham/plantmap/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
+        <form id="newForm" class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="formLat" class="col-sm-2 control-label">Lat/Lon</label>
+            <div class="col-sm-5">
+              <input type="text" class="form-control" name="formLat" id="formLat" readonly>
+            </div>
+            <div class="col-sm-5">
+              <input type="text" class="form-control" name="formLon" id="formLon" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="formType" class="col-sm-2 control-label">Type</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="formType" id="formType">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="formName" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="formName" id="formName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="formSize" class="col-sm-2 control-label">Size</label>
+            <div class="col-sm-10">
+              <label class="radio-inline">
+                <input type="radio" name="formSize" id="sizeSmall" value="small"> small
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="formSize" id="sizeMedium" checked="checked" value="medium"> medium
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="formSize" id="sizeLarge" value="large"> large
+              </label>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox"> Remember me
+                </label>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="submit" id="saveLocation" class="btn btn-primary">Save</button>
+      </div>
+</form>
     </div>
+  </div>
+</div>
+  
+    <div id="map">
+    <div id="ui">
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
+      <button id='create' class='btn btn-default' data-toggle="modal" data-target="#myModal">Create</button>
     </div>
+    </div
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Plantmap maintained by <a href="https://github.com/vlandham">vlandham</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
 
-    
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.11.1.min.js"><\/script>')</script>
 
-  </body>
+
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <script src="js/libs/coffee-script.js"></script>
+  <script src="js/libs/bootstrap.min.js"></script>
+  <script src="js/leaflet/leaflet.js"></script>
+  <script src="js/libs/d3.js"></script>
+  <script src="js/libs/tabletop.js"></script>
+  <script src="js/libs/queue.min.js"></script>
+  <script type="text/coffeescript" src="coffee/vis.coffee"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+    });
+  </script>
+
+
+  <script> // Change UA-XXXXX-X to be your site's ID
+    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
 </html>

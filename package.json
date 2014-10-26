@@ -1,0 +1,35 @@
+{
+  "name": "plant_map",
+  "version": "0.0.1",
+  "description": "hack for adding local plant data",
+  "main": "index.html",
+  "dependencies": {
+    "d3-metatable": "0.3.0",
+    "smash": "0.0.11",
+    "uglify-js": "2.4.1",
+    "d3": "3.4.11"
+  },
+  "devDependencies": {
+    "browserify": "4.1.11",
+    "brfs": "1.0.2",
+    "tape": "~2.12.3",
+    "jshint": "2.5.1"
+  },
+  "scripts": {
+    "start": "nodewebkit",
+    "test": "jshint src",
+    "test-browser": "browserify test/index.js | testling"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Jim Vallandingham",
+  "license": "BSD",
+  "bugs": {
+    "url": ""
+  },
+  "window": {
+    "toolbar": false
+  }
+}
