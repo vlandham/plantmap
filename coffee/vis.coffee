@@ -87,9 +87,17 @@ initTypes = (data, tabletop) ->
   console.log(data)
   allTypes = data
 
+showCurrent = (snapshot) ->
+  val = snapshot.val()
+  d3.map(val).values().forEach (d) ->
+    console.log(d)
+    pos = [d.lat, d.lon]
+    marker = L.marker(pos).addTo(map)
+
 initData = () ->
   ref = new Firebase('https://blistering-fire-9499.firebaseio.com')
   locRef = ref.child('locs')
+  locRef.on('value', showCurrent, ((e) -> console.log('error: ' + e.code)))
 
 initTable = () ->
   Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true} )
