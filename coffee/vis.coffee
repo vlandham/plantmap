@@ -3,7 +3,8 @@ root = exports ? this
 
 home =[47.67645, -122.39607]
 map = null
-circle = null
+current = null
+position = null
 
 locRef = null
 
@@ -13,11 +14,10 @@ allTypes = null
 allLocs = null
 
 click = (e) ->
-  circle.setLatLng(e.latlng)
-  console.log(e.latlng)
+  current.setLatLng(e.latlng)
 
 currentLocation = () ->
-  circle.getLatLng()
+  current.getLatLng()
 
 populateModal = (latlon) ->
   d3.select("#formLat").attr("value", latlon.lat)
@@ -47,7 +47,6 @@ setupData = (values) ->
 save = () ->
   values = $("#newForm").serializeArray()
   data = setupData(values)
-  console.log(data)
   saveData(data)
   $('#myModal').modal('hide')
 
@@ -56,7 +55,6 @@ save = () ->
 
 make = () ->
   loc = currentLocation()
-  console.log(loc)
   populateModal(loc)
   $('#myModal').modal()
   d3.select("#newForm").on("submit", save)
@@ -73,24 +71,19 @@ initMap = () ->
   }).addTo(map)
 
 
-initCircle = () ->
-  circle = L.circle([51.508, -0.11], 5, {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5
-  })
+initCurrent = () ->
+  icon = L.MakiMarkers.icon({icon: "rocket", color: "#b0b", size: "m"})
+  current = L.marker(home,{icon: icon})
 
-  circle.setLatLng(home)
-  circle.addTo(map)
+  current.setLatLng(home)
+  current.addTo(map)
 
 initTypes = (data, tabletop) ->
-  console.log(data)
   allTypes = data
 
 showCurrent = (snapshot) ->
   val = snapshot.val()
   d3.map(val).values().forEach (d) ->
-    console.log(d)
     pos = [d.lat, d.lon]
     marker = L.marker(pos).addTo(map)
     marker.bindPopup("<b>#{d.type}</b>")
@@ -103,10 +96,30 @@ initData = () ->
 initTable = () ->
   Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true} )
 
+locationFound = (loc) ->
+  console.log(loc)
+  position.setLatLng(loc.latlng)
+  # position.setAccuracy(loc.accuracy)
+  position.setAccuracy(0)
+  
+  position.addTo(map)
+
+initPosition = () ->
+  position = L.userMarker(home, {pulsing:false, accuracy:100, smallIcon:true})
+  map.on("locationfound", locationFound)
+  map.locate({
+    watch: false,
+    locate: true,
+    setView: true,
+    enableHighAccuracy: true
+  })
+  
+
 $ ->
 
   initMap()
-  initCircle()
+  initCurrent()
+  initPosition()
   initTable()
   initData()
 
