@@ -72,7 +72,7 @@ initMap = () ->
 
 
 initCurrent = () ->
-  icon = L.MakiMarkers.icon({icon: "rocket", color: "#b0b", size: "m"})
+  icon = L.MakiMarkers.icon({icon: "triangle", color: "#b0b", size: "m"})
   current = L.marker(home,{icon: icon})
 
   current.setLatLng(home)
