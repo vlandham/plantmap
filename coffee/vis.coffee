@@ -107,6 +107,10 @@ locationFound = (loc) ->
 initPosition = () ->
   position = L.userMarker(home, {pulsing:false, accuracy:100, smallIcon:true})
   map.on("locationfound", locationFound)
+  button = L.easyButton('fa-compass',findPosition,'', map)
+  findPosition()
+
+findPosition = () ->
   map.locate({
     watch: false,
     locate: true,
