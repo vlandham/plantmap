@@ -93,6 +93,7 @@ showCurrent = (snapshot) ->
     console.log(d)
     pos = [d.lat, d.lon]
     marker = L.marker(pos).addTo(map)
+    marker.bindPopup("<b>#{d.type}</b>")
 
 initData = () ->
   ref = new Firebase('https://blistering-fire-9499.firebaseio.com')
