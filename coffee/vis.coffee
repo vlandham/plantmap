@@ -8,7 +8,8 @@ position = null
 
 locRef = null
 
-table_url = "https://docs.google.com/spreadsheets/d/1Y_rBIlUwBYWDAz0Hp_SooQnESTbfhIZE-r5fGMRTbEA/pubhtml"
+# table_url = "https://docs.google.com/spreadsheets/d/1Y_rBIlUwBYWDAz0Hp_SooQnESTbfhIZE-r5fGMRTbEA/pubhtml"
+table_url = "1Y_rBIlUwBYWDAz0Hp_SooQnESTbfhIZE-r5fGMRTbEA"
 allTypes = null
 
 allLocs = null
@@ -43,7 +44,7 @@ setupData = (values) ->
     data[name] = value
   data
 
-  
+
 save = () ->
   values = $("#newForm").serializeArray()
   data = setupData(values)
@@ -63,12 +64,15 @@ make = () ->
   d3.event.stopPropagation()
 
 initMap = () ->
-  map = L.map('map').setView(home, 18)
-  
-  L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-    maxZoom: 20
-  }).addTo(map)
+  L.mapbox.accessToken = 'pk.eyJ1IjoibGFuZGhhbSIsImEiOiJ6cHE3dnFjIn0.RWhq_RIy4j_MQPnusn5dQw'
+  map = L.mapbox.map('map', 'landham.cbfa3e4b').setView(home, 18)
+
+  hash = new L.Hash(map)
+
+  # L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  #   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+  #   maxZoom: 20
+  # }).addTo(map)
 
 
 initCurrent = () ->
@@ -78,15 +82,35 @@ initCurrent = () ->
   current.setLatLng(home)
   current.addTo(map)
 
+initSearch = () ->
+  types = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: allTypes.map((d) -> d.type)
+  })
+
+  types.initialize()
+
+  $('#search .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'types',
+    source: types
+  })
+
 initTypes = (data, tabletop) ->
   allTypes = data
+  initSearch()
 
 showCurrent = (snapshot) ->
   val = snapshot.val()
   d3.map(val).values().forEach (d) ->
     pos = [d.lat, d.lon]
-    marker = L.marker(pos).addTo(map)
-    marker.bindPopup("<b>#{d.type}</b>")
+    marker = L.marker(pos).bindLabel(d.type).addTo(map)
+    # marker.bindPopup("<b>#{d.type}</b>")
 
 initData = () ->
   ref = new Firebase('https://blistering-fire-9499.firebaseio.com')
@@ -94,21 +118,21 @@ initData = () ->
   locRef.on('value', showCurrent, ((e) -> console.log('error: ' + e.code)))
 
 initTable = () ->
-  Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true} )
+  Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true, debug:true} )
 
 locationFound = (loc) ->
   console.log(loc)
   position.setLatLng(loc.latlng)
   # position.setAccuracy(loc.accuracy)
   position.setAccuracy(0)
-  
+
   position.addTo(map)
 
 initPosition = () ->
   position = L.userMarker(home, {pulsing:false, accuracy:100, smallIcon:true})
   map.on("locationfound", locationFound)
   button = L.easyButton('fa-compass',findPosition,'', map)
-  findPosition()
+  # findPosition()
 
 findPosition = () ->
   map.locate({
@@ -117,7 +141,7 @@ findPosition = () ->
     setView: true,
     enableHighAccuracy: true
   })
-  
+
 
 $ ->
 
@@ -129,5 +153,5 @@ $ ->
 
   map.on('click', click)
   d3.select("#create").on('click', make)
-  
+
 
