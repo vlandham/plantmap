@@ -3,8 +3,11 @@ root = exports ? this
 
 home =[47.67645, -122.39607]
 map = null
+markerLayer = null
 current = null
 position = null
+
+allData = []
 
 locRef = null
 
@@ -60,20 +63,21 @@ make = () ->
   $('#myModal').modal()
   d3.select("#newForm").on("submit", save)
   types = allTypes.map((d) -> d.type)
-  $("#formType").typeahead({ source:types})
+  # $("#formType").typeahead({ source:types})
   d3.event.stopPropagation()
+
+searchFilter = (e, suggestion) ->
+  clearMarkers()
+  filterData = allData.filter (d) ->
+    d.type == suggestion.type
+  addPoints(filterData)
+
 
 initMap = () ->
   L.mapbox.accessToken = 'pk.eyJ1IjoibGFuZGhhbSIsImEiOiJ6cHE3dnFjIn0.RWhq_RIy4j_MQPnusn5dQw'
   map = L.mapbox.map('map', 'landham.cbfa3e4b').setView(home, 18)
-
   hash = new L.Hash(map)
-
-  # L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-  #   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-  #   maxZoom: 20
-  # }).addTo(map)
-
+  markerLayer = L.layerGroup().addTo(map)
 
 initCurrent = () ->
   icon = L.MakiMarkers.icon({icon: "triangle", color: "#b0b", size: "m"})
@@ -83,13 +87,11 @@ initCurrent = () ->
   current.addTo(map)
 
 initSearch = () ->
-  types = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
+  typesB = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('type'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: allTypes.map((d) -> d.type)
+    local: allTypes#.map((d) -> d.type)
   })
-
-  types.initialize()
 
   $('#search .typeahead').typeahead({
     hint: true,
@@ -97,31 +99,43 @@ initSearch = () ->
     minLength: 1
   },
   {
-    name: 'types',
-    source: types
-  })
+    name: 'ttypes',
+    source: typesB,
+    display: 'type',
+  }).on('typeahead:selected', searchFilter)
 
 initTypes = (data, tabletop) ->
   allTypes = data
   initSearch()
 
-showCurrent = (snapshot) ->
+clearMarkers = () ->
+  if (map.hasLayer(markerLayer))
+    map.removeLayer(markerLayer)
+  markerLayer = new L.layerGroup()
+  markerLayer.addTo(map)
+
+
+addPoints = (data) ->
+  data.forEach (d) ->
+    pos = [d.lat, d.lon]
+    marker = L.marker(pos).bindLabel(d.type).addTo(markerLayer)
+    # marker.bindPopup("<b>#{d.type}</b>")
+
+loadData = (snapshot) ->
   val = snapshot.val()
   d3.map(val).values().forEach (d) ->
-    pos = [d.lat, d.lon]
-    marker = L.marker(pos).bindLabel(d.type).addTo(map)
-    # marker.bindPopup("<b>#{d.type}</b>")
+    allData.push(d)
+  addPoints(allData)
 
 initData = () ->
   ref = new Firebase('https://blistering-fire-9499.firebaseio.com')
   locRef = ref.child('locs')
-  locRef.on('value', showCurrent, ((e) -> console.log('error: ' + e.code)))
+  locRef.on('value', loadData, ((e) -> console.log('error: ' + e.code)))
 
 initTable = () ->
-  Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true, debug:true} )
+  Tabletop.init( {key: table_url, callback: initTypes, simpleSheet: true, debug:false} )
 
 locationFound = (loc) ->
-  console.log(loc)
   position.setLatLng(loc.latlng)
   # position.setAccuracy(loc.accuracy)
   position.setAccuracy(0)
