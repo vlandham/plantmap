@@ -1,13 +1,14 @@
 
 root = exports ? this
 
-home =[47.67645, -122.39607]
+home =[47.58259, -122.38906]
 map = null
 markerLayer = null
 current = null
 position = null
 
 allData = []
+typesB = null
 
 locRef = null
 
@@ -62,8 +63,10 @@ make = () ->
   populateModal(loc)
   $('#myModal').modal()
   d3.select("#newForm").on("submit", save)
-  types = allTypes.map((d) -> d.type)
+  # types = allTypes.map((d) -> d.type)
   # $("#formType").typeahead({ source:types})
+
+  addTypeAhead($("#formType"))
   d3.event.stopPropagation()
 
 searchFilter = (e, suggestion) ->
@@ -75,16 +78,29 @@ searchFilter = (e, suggestion) ->
 
 initMap = () ->
   L.mapbox.accessToken = 'pk.eyJ1IjoibGFuZGhhbSIsImEiOiJ6cHE3dnFjIn0.RWhq_RIy4j_MQPnusn5dQw'
-  map = L.mapbox.map('map', 'landham.cbfa3e4b').setView(home, 18)
+  map = L.mapbox.map('map', 'mapbox.streets').setView(home, 18)
   hash = new L.Hash(map)
   markerLayer = L.layerGroup().addTo(map)
 
 initCurrent = () ->
-  icon = L.MakiMarkers.icon({icon: "triangle", color: "#b0b", size: "m"})
+  icon = L.MakiMarkers.icon({icon: "circle", color: "#8FBE00", size: "m"})
   current = L.marker(home,{icon: icon})
 
   current.setLatLng(home)
   current.addTo(map)
+
+addTypeAhead = (selection) ->
+  selection.typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'ttypes',
+      source: typesB,
+      display: 'type',
+    })
+
 
 initSearch = () ->
   typesB = new Bloodhound({
@@ -93,16 +109,19 @@ initSearch = () ->
     local: allTypes#.map((d) -> d.type)
   })
 
-  $('#search .typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-  {
-    name: 'ttypes',
-    source: typesB,
-    display: 'type',
-  }).on('typeahead:selected', searchFilter)
+  addTypeAhead($('#search .typeahead'))
+    .on('typeahead:selected', searchFilter)
+
+  # $('#search .typeahead').typeahead({
+  #   hint: true,
+  #   highlight: true,
+  #   minLength: 1
+  # },
+  # {
+  #   name: 'ttypes',
+  #   source: typesB,
+  #   display: 'type',
+  # }).on('typeahead:selected', searchFilter)
 
 initTypes = (data, tabletop) ->
   allTypes = data
@@ -167,5 +186,3 @@ $ ->
 
   map.on('click', click)
   d3.select("#create").on('click', make)
-
-
